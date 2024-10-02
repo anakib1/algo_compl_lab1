@@ -1,0 +1,64 @@
+#include <chrono>
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+
+unordered_map<int, int> counts;
+unordered_set<int> set;
+
+string operation;
+string operand;
+
+#define HASH_COUNT 7
+#define MAX 10000019
+const long long PRIMES[] = {29, 37, 41, 53, 59, 67, 73, 113};
+constexpr long long MOD = MAX;
+
+long long hash_str(const long long BASE, const string &s) {
+    long long ret = 0;
+    long long pwr = 1;
+    for (const char &c: s) {
+        (ret += (c - 'a') * pwr) %= MOD;
+        (pwr *= BASE) %= MOD;
+    }
+    return ret;
+}
+
+long long hashes[HASH_COUNT];
+int blum[MAX];
+
+int main() {
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    std::ios::sync_with_stdio(false);
+
+    freopen("../input.txt", "r", stdin);
+    freopen("../output.txt", "w", stdout);
+
+    const chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    while (cin >> operation >> operand) {
+        int i;
+        for (i = 0; i < HASH_COUNT; i++) {
+            hashes[i] = hash_str(PRIMES[i], operand);
+            if (operation == "+") {
+                blum[hashes[i]]++;
+            } else if (operation == "-") {
+                blum[hashes[i]]--;
+            } else {
+                if (blum[hashes[i]] == 0) {
+                    cout << "no\n";
+                    break;
+                }
+            }
+        }
+
+        if (operation == "?" && i == HASH_COUNT) {
+            cout << "yes\n";
+        }
+    }
+    const chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cerr << static_cast<std::chrono::duration<double>>(end - begin) << '\n';
+}

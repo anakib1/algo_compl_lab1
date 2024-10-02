@@ -1,0 +1,50 @@
+#include <chrono>
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+
+unordered_map<int, int> counts;
+unordered_set<int> set;
+unordered_map<int, string> alias;
+
+string operation;
+string operand;
+
+constexpr long long PRIME = 37;
+constexpr long long MOD = 1000000009;
+
+long hash_str(const string &s) {
+    long ret = 0;
+    long pwr = 1;
+    for (const char c: s) {
+        (ret += (c - 'a') * pwr) %= MOD;
+        (pwr *= PRIME) %= MOD;
+    }
+    return ret;
+}
+
+int main() {
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    std::ios::sync_with_stdio(false);
+
+    freopen("../input.txt", "r", stdin);
+    freopen("../output.txt", "w", stdout);
+
+    const chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    while (cin >> operation >> operand) {
+        const long operand_hash = hash_str(operand);
+        alias.insert({operand_hash, operand});
+        counts[operand_hash] += 1;
+    }
+
+    for (const auto &p: counts) {
+        cout << alias[p.first] << " " << p.second << '\n';
+    }
+
+    const chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cerr << static_cast<std::chrono::duration<double>>(end - begin) << '\n';
+}
